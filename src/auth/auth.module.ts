@@ -14,7 +14,7 @@ import { JwtStrategy } from './jwt.strategy';
       // secretOrPrivateKey: 'vuttr@back',
       secret: 'vuttr@back',
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: '12h',
       },
     }),
     UsersModule,

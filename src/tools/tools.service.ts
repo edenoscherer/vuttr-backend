@@ -3,8 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectID } from 'bson';
 import { ITool } from './tool.interface';
-import { IUser } from '../users/user.interface';
-import { User } from '../users/user.decorator';
+import { ToolDto } from './tool.dto';
 
 @Injectable()
 export class ToolsService {
@@ -22,7 +21,7 @@ export class ToolsService {
     }
   }
 
-  public async create(tool: ITool): Promise<ITool> {
+  public async create(tool: ToolDto): Promise<ITool> {
     try {
       return await (await this.toolSchema.create(tool)).populate('user');
     } catch (error) {
@@ -30,7 +29,7 @@ export class ToolsService {
     }
   }
 
-  public async update(tool: ITool): Promise<ITool> {
+  public async update(tool: ToolDto): Promise<ITool> {
     try {
       return await (await this.toolSchema.findByIdAndUpdate(
         { _id: tool.id },

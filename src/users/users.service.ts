@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUser } from './user.interface';
+import { UserDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,7 @@ export class UsersService {
     this.userSchema = userSchema;
   }
 
-  async store(user: IUser): Promise<IUser> {
+  async store(user: UserDto): Promise<IUser> {
     try {
       const createdUser = await this.userSchema.create(user);
       createdUser.password = undefined;

@@ -7,6 +7,8 @@ import { IUser } from 'src/users/user.interface';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UserCredentiaisDto } from './userCredentiais.dto';
+import { UserDto } from '../users/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,12 +20,14 @@ export class AuthService {
     this.jwtService = jwtService;
   }
 
-  async login(credentiais: IUser): Promise<{ token: string }> {
+  async login(credentiais: UserCredentiaisDto): Promise<{ token: string }> {
     const user = await this.usersService.findByEmail(credentiais.email);
+
     if (!user) {
       throw new UnauthorizedException();
     }
-    if (await !bcrypt.compare(credentiais.password, user.password)) {
+    const comparePassword = await bcrypt.compare(credentiais.password, user.password);
+    if (!comparePassword) {
       throw new UnauthorizedException();
     }
 
@@ -36,7 +40,7 @@ export class AuthService {
     return { token };
   }
 
-  async register(credentiais: IUser): Promise<IUser> {
+  async register(credentiais: UserDto): Promise<IUser> {
     try {
       return await this.usersService.store(credentiais);
     } catch (error) {

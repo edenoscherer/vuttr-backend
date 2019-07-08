@@ -30,6 +30,8 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       select: false,
+      minlength: 4,
+      maxlength: 100,
     },
   },
   { timestamps: true },

@@ -15,6 +15,7 @@ import { ITool } from './tool.interface';
 import { ToolsService } from './tools.service';
 import { User } from '../users/user.decorator';
 import { IUser } from '../users/user.interface';
+import { ToolDto } from './tool.dto';
 
 @Controller('tools')
 export class ToolsController {
@@ -32,14 +33,14 @@ export class ToolsController {
 
   @Post()
   @UseGuards(AuthGuard())
-  async create(@Body() tool: ITool, @User() user: IUser): Promise<ITool> {
-    tool.user = user;
+  async create(@Body() tool: ToolDto, @User() user: IUser): Promise<ITool> {
+    tool.user = user._id;
     return await this.toolsService.create(tool);
   }
 
   @Put()
   @UseGuards(AuthGuard())
-  async update(@Body() tool: ITool, @User() user: IUser): Promise<ITool> {
+  async update(@Body() tool: ToolDto, @User() user: IUser): Promise<ITool> {
     tool.user = user;
     return await this.toolsService.update(tool);
   }
