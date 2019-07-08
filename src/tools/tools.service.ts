@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, ForbiddenException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectID } from 'bson';
@@ -13,9 +13,13 @@ export class ToolsService {
     this.toolSchema = toolSchema;
   }
 
-  public async findAll(userId: string): Promise<ITool[]> {
+  public async findAll(userId: string, tag?: string): Promise<ITool[]> {
     try {
-      return await this.toolSchema.find({ user: userId }).populate('user');
+      if (tag) {
+        return await this.toolSchema.find({ user: userId, tags: tag }).populate('user');
+      } else {
+        return await this.toolSchema.find({ user: userId }).populate('user');
+      }
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -43,9 +47,16 @@ export class ToolsService {
     }
   }
 
-  public async delete(toolId: ObjectID): Promise<ITool> {
+  public async delete(toolId: ObjectID, userId: string): Promise<ITool> {
     try {
-      return await this.toolSchema.findByIdAndDelete({ _id: toolId });
+      const tool = await this.toolSchema.findOne({ _id: toolId, user: userId});
+      if (!tool) {
+        throw new ForbiddenException('Not found.');
+      }
+      await tool.remove();
+      return tool;
+      // return await this.toolSchema.findByIdAndDelete({ _id: toolId});
+      // return await this.toolSchema.findOneAndDelete({ _id: toolId, user: userId});
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
